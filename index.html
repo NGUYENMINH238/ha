@@ -43,33 +43,24 @@
         </div>
     </div>
     <script>
-        function copyKey() {
-            let keyText = document.getElementById("key").innerText;
-            navigator.clipboard.writeText(keyText).then(() => {
-                alert("Đã sao chép key!");
-            });
-        }
-
         function getKey() {
-            let referer = document.referrer;
-            if (!referer.includes("yeumoney.com")) {
-                document.getElementById("message").innerText = "Bạn cần truy cập từ link Yeumoney để nhận key!";
-                return;
+    fetch("http://192.168.1.7:5000/get-key")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Bạn cần truy cập từ link Yeumoney để nhận key!");
             }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("message").classList.add("hidden");
+            document.getElementById("key-container").classList.remove("hidden");
+            document.getElementById("key").innerText = data.key;
+        })
+        .catch(error => {
+            document.getElementById("message").innerText = error.message;
+        });
+}
 
-            fetch("http://192.168.1.7:5000/get-key")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("message").classList.add("hidden");
-                    document.getElementById("key-container").classList.remove("hidden");
-                    document.getElementById("key").innerText = data.key;
-                })
-                .catch(() => {
-                    document.getElementById("message").innerText = "Lỗi khi lấy key, vui lòng thử lại!";
-                });
-        }
-
-        window.onload = getKey;
     </script>
 </body>
 </html>
